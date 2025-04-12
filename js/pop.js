@@ -1,10 +1,11 @@
- class Pop {
+class Pop {
   constructor(blocos = {}, opens = []) {
     this.blocos = blocos; // Mapeamento de nomes para funções de renderização
     this.chaves = Object.keys(blocos); // Todas as chaves iniciais
+    this.grupes = {}
     this.set = {}; // Armazena variáveis observáveis
     this.clonagens = {}; // Controla duplicações de blocos
-    this.animacoes = {}; // Gerencia animações em fila
+    this.configAnimacoes = {animacoes:[],timing:{}}; // Gerencia animações em fila
     
     // Inicializa blocos, dependendo do valor de 'opens'
     this.init(opens === 'initPop' ? this.chaves : opens);
@@ -71,6 +72,20 @@
     this.chaves = Object.keys(this.blocos);
     return this;
   }
+  /**
+   * adicionar grupos de blocos
+   */
+  grupe(nome, blocos){
+   this.grupes[nome]=blocos;
+   return this;
+  }
+  
+  absoluteExiber(blocos=[]){
+    for (let i = 0; i < this.chaves.length; i++) {
+      // Tab to edit
+    if(!this.chaves[i]) this.remover(blocos[i])
+    }
+  }
   
   setVar(nomeVariavel, callback) {
     Object.defineProperty(this.set, nomeVariavel, {
@@ -116,95 +131,89 @@
   }
   
   // Objeto que gerencia as animações em fila para cada elemento
+ anime(bloco, config) {
+  // let [animacoes,timing] = this.configAnimacoes;
+  let animacoes = [];
+  let timing = {};
+
+  let elemento = document.querySelector(bloco);
   
-  animar(bloco, config = {}) {
-    // Inicializa a fila para o bloco, se ainda não existir
-    if (!this.animacoes[bloco]) {
-      this.animacoes[bloco] = { fila: [], emExecucao: false };
-    }
-    
-    // Adiciona a configuração da animação na fila
-    this.animacoes[bloco].fila.push(config);
-    
-    // Se já há uma animação em execução, aguarde
-    if (this.animacoes[bloco].emExecucao) return;
-    
-    this._executarProxima(bloco);
+  if (!elemento) {
+    console.error(`Elemento '${bloco}' não encontrado.`);
+    return;
   }
   
-  _executarProxima(bloco) {
-    const dados = this.animacoes[bloco];
-    
-    if (!dados || dados.fila.length === 0) {
-      dados.emExecucao = false;
-      return;
-    }
-    
-    dados.emExecucao = true;
-    const config = dados.fila.shift(); // Pega a próxima animação da fila
-    const elemento = document.getElementById(bloco);
-    
-    if (!elemento) {
-      console.error(`Elemento com id "${bloco}" não encontrado.`);
-      this._executarProxima(bloco); // Continua a fila mesmo em caso de erro
-      return;
-    }
-    
-    const {
-      type = "fade",
-        duration = 500,
-        easing = "ease-in-out",
-        delay = 0,
-        direction = 0
-    } = config;
-    
-    // Obtém os keyframes de acordo com o tipo da animação
-    const getKeyframes = () => {
-      switch (type) {
-        case "rotate":
-          const rotateValue = isNaN(direction) ? 360 : Number(direction);
-          return [{ transform: "rotate(0deg)" }, { transform: `rotate(${rotateValue}deg)` }];
-          
-        case "scale":
-          const scaleValue = isNaN(direction) ? 1.5 : Number(direction);
-          return [{ transform: "scale(1)" }, { transform: `scale(${scaleValue})` }];
-          
-        case "fade":
-          return [{ opacity: 0 }, { opacity: 1 }];
-          
-        case "slide":
-          const slideDirections = {
-            up: "translateY(-100%)",
-            down: "translateY(100%)",
-            left: "translateX(-100%)",
-            right: "translateX(100%)"
-          };
-          return [{ transform: slideDirections[direction] || "translateX(0)" }, { transform: "translateX(0)" }];
-          
-        case "bounce":
-          const bounceValue = isNaN(direction) ? 20 : Number(direction) * 10;
-          return [
-            { transform: "translateY(0)" },
-            { transform: `translateY(${bounceValue}px)` },
-            { transform: "translateY(0)" }
-          ];
-          
-        default:
-          return [{ opacity: 0 }, { opacity: 1 }];
+  // API fluente: quando só o seletor é passado
+  if (!config) {
+    const funcoes = {
+      add: (props) => {
+        animacoes.push(props);
+        return funcoes;
+      },
+      config: (configs) => {
+        timing = { ...timing, ...configs };
+        funcoes.play()
+        return funcoes;
+      },
+      onfinish: null,
+      play: () => {
+        if (animacoes.length === 0) {
+          console.warn('Nenhuma animação adicionada.');
+          return;
+        }
+      console.log()
+        const player = elemento.animate(animacoes, timing);
+        if (typeof funcoes.onfinish === 'function') {
+          player.onfinish = funcoes.onfinish;
+        }
+        return player;
       }
     };
-    
-    const keyframes = getKeyframes();
-    const options = { duration, delay, easing, iterations: 1, fill: "forwards" };
-    
-    // Cria a animação
-    const anim = elemento.animate(keyframes, options);
-    
-    anim.onfinish = () => {
-      dados.emExecucao = false;
-      this._executarProxima(bloco); // Executa a próxima animação da fila
-    };
+    return funcoes;
   }
+  
+  // Modo declarativo
+  if (!config.props) {
+    console.warn('config.props está indefinido ou vazio.');
+    return;
+  }
+  
+  const keyframes = config.props;
+  timing = {
+    duration: config.duration || 1000,
+    easing: config.easing || 'linear',
+    fill: config.fill || 'forwards'
+  };
+  
+  const player = elemento.animate(keyframes, timing);
+  player.onfinish = config.onfinish || null;
+  return player;
+}  /*anime(el, animations, finalCallback) {
+    if (!Array.isArray(animations)) {
+      // Caso seja só um objeto, não uma fila
+      animations = [animations];
+    }
+    
+    function runNext(index) {
+      if (index >= animations.length) {
+        if (typeof finalCallback === 'function') finalCallback();
+        return;
+      }
+      
+      const current = animations[index];
+      const { duration = 1000, ...props } = current;
+      
+      animateOnce(el, props, duration, () => runNext(index + 1));
+    }
+    
+    runNext(0);
+  };*/
+  
+html(bloco,html){
+  this.$('#'+bloco).innerHTML=html;html
+return this;
+}
+
   css(css){
     const styleTag = document.createElement('style');
 
@@ -324,15 +333,29 @@ document.head.appendChild(styleTag);
     return document.getElementById(elemento)
   }
   
-  remover(bloco = '') {
-    if (bloco > 1) {
-      bloco.forEach((index, array) => {
-        document.getElementById(array[index]).remove() || `<span style='color:red;'>Error 2 com: ${bloco}</span>`;
-        
-      })
+   remover(bloco = '', debug=false) {
+  if (!bloco) return;
+  
+  // Se for array, remove cada item
+  if (Array.isArray(bloco)) {
+    bloco.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.remove();
+      } else {
+        if(debug) console.error(`Elemento com id "${id}" não encontrado.`);
+      }
+    });
+  } else {
+    // Se for string (id único), remove diretamente
+    const el = document.getElementById(bloco);
+    if (el) {
+      el.remove();
+    } else {
+      if(debug) console.error(`Elemento com id "${bloco}" não encontrado.`);
     }
-    document.getElementById(bloco).remove() || `<span style='color:red;'>Error 2 com: ${bloco}</span>`;
   }
+}
   
   /**
    * Atualiza o conteúdo dos blocos existentes no DOM, inicializando se necessário.
@@ -370,12 +393,54 @@ document.head.appendChild(styleTag);
   }
 }
 
+function parseCSSValue(value) {
+    const match = /^(-?[\d.]+)([a-z%]*)$/i.exec(value);
+    return match ? { num: parseFloat(match[1]), unit: match[2] || '' } : { num: 0, unit: '' };
+  }
+  
+   function animateOnce(el, props, duration, onComplete) {
+    const startTime = performance.now();
+    const initial = {};
+    
+    for (const prop in props) {
+      const computed = getComputedStyle(el)[prop];
+      const parsed = parseCSSValue(computed);
+      const targetParsed = parseCSSValue(props[prop]);
+      initial[prop] = {
+        from: parsed.num,
+        to: targetParsed.num,
+        unit: targetParsed.unit || parsed.unit
+      };
+    }
+    
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      for (const prop in initial) {
+        const { from, to, unit } = initial[prop];
+        const value = from + (to - from) * progress;
+        el.style[prop] = value + unit;
+      }
+      
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        if (typeof onComplete === 'function') onComplete();
+      }
+    }
+    
+    requestAnimationFrame(tick);
+  }
+  
+  // Fila de animações
+
 
 console.log('%c pop.js carregado... digite $pop("help")', 'color: lime; background: black; font-weight: bold; padding: 2px;');
 
 const comandosPop = {
   help: () => `
-    === Comandos rápidos ===
+    === Comandos Pop.js ===
     - help: mostra esta ajuda
     - select <selector>: seleciona elementos do DOM
     - css <selector>: mostra estilos computados
@@ -402,8 +467,8 @@ const comandosPop = {
     return el ? el.innerHTML : 'Elemento não encontrado.';
   },
   
-log: (msg) => console.log('%c[Pop.js]%c ' + msg, 'color: magenta; font-weight: bold;', 'color: white;'),
-
+  log: (msg) => console.log('%c[Pop]', 'color: cyan; font-weight: bold;', msg),
+  
   github: () => window.open('https://github.com/DanielFlux23/Pop.js', '_blank')
 };
 

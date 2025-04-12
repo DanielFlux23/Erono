@@ -1,3 +1,88 @@
-button{
-  background: red;
+/* Reset maroto */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Corpo do jogo */
+body {
+  font-family: 'Cinzel', serif;
+  background: url('img/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #42445A;
+}
+
+/* Área principal do jogo */
+#game-container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 3px solid #8b5e3c;
+  border-radius: 10px;
+  box-shadow: 0 0 15px #000;
+}
+
+/* HUD do jogador */
+#hud {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: rgba(139, 94, 60, 0.8);
+  border-bottom: 2px solid #000;
+}
+
+#hud .stat {
+  font-size: 1.2em;
+  margin: 0 10px;
+}
+
+/* Caixa de diálogo estilo RPG */
+#dialog-box {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(24, 20, 18, 0.85);
+  border: 2px solid #c9a66b;
+  border-radius: 5px;
+  font-size: 1.1em;
+  line-height: 1.4;
+}
+
+/* Botões de ação */
+button {
+  display: inline-block;
+  margin: 10px 5px;
+  padding: 10px 20px;
+  background-color: #425A4F;
+  color: #fff;
+  border: 2px solid #c9a66b;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background-color: #5c3b28;
+  transform: scale(1.05);
+}
+
+/* Inventário ou menu lateral */
+#inventory {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: rgba(47, 39, 35, 0.9);
+  border: 2px solid #a67c52;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 10px;
+}
+
+.item-slot {
+  background-color: #2e2e2e;
+  border: 1px solid #775e3f;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+  font-size: 0.9em;
 }
