@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Erono- game RPG</title>
+  <link rel="stylesheet" href="/css/gobal.css" type="text/css" media="all" />
   <link rel="stylesheet" href="/css/styles.css" type="text/css" media="all" />
-  <script type="module" src="/css/css.js"></script>
-  <title></title>
 </head>
-
 <body>
-  <script src="/js/pop.js"></script>
-  <script type="module" src="/js/main.js"></script>
-</body>
+  
+  <div id="menu">
+<img id="logo_erono" src="/imagens/logo4_30_21848.png" alt="Logo do jogo" width="350" height="350">
+    <button id="play_menu">play</button>
+    <button id="opcoes_menu">opcoes
+</button>
+    <button id="creditos_menu">creditos</button>
+  </div>
+  <script src="/src/engine/titanDom.js"></script>
+  <script src="/js/engine.js"></script>
+  <script type="module" src="/src/scenes/menu.js"></script>
 
+</body>
 </html>

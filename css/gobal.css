@@ -1,0 +1,30 @@
+:root {
+  --btn-color: #1A824E;
+  --font: sans-serif;
+  --text-color: #ffffff;
+}
+
+body {
+  font-family: var(--font);
+/*  background: black url(/imagens/2.yfvnonoe-jrywcswbtrxiokn38w_gzqe4tjhyxkpgku.jpg) center/cover no-repeat;*/
+background: #111;
+
+  background-attachment: fixed;
+  color: var(--text-color);
+}
+button {
+  padding: 20px 30px;
+  background: var(--btn-color); /* tom místico */
+  border: 2px solid #0A6047; /* cor de energia arcana */
+  border-radius: 8px;
+  font-size: 20px;
+  color: #FFFFFF;
+  font-family: 'Cinzel', serif; /* tipografia com vibe medieval */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background:#21483DF0;
+  transform: scale(1.05);
+}
