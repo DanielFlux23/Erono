@@ -1,11 +1,13 @@
 //import {ctx} from '/src/scenes/game.js';
 import {
-  Sprite,
+  ImageCache,
   Ambiente,
-  Render,
-  ctx
-} 
-  from '/src/engine/index.js';
+  Sprite,
+}
+from '/src/engine/index.js';
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
 const floresta = new Ambiente({
   nome: 'floresta',
   fundo: 'imagemExemplo.png',
@@ -14,30 +16,36 @@ const floresta = new Ambiente({
   classeSprite: Sprite
 })
 
-const arvores = floresta.createObjetos({
-  type: 'arvore',
-  dimensions: {
-    height: 32,
-    width: 64,
+const arvores = floresta.createObjetos(
+  {
+    type: 'arvore',
+    dimensions: {
+      height: 32,
+      width: 34,
+    },
+    imgSrc: '/imagens/arvore_erono.png',
   },
-  imgSrc: '/imagens/Untitled_erono_720_720.png',
-})
+  [
+    { x: 50, y: 100, id: 'tree1' },
+    { x: 120, y: 110, id: 'tree2' },
+    { x: 190, y: 90, id: 'tree3' },
+    { x: 260, y: 105, id: 'tree4' },
+    { x: 330, y: 98, id: 'tree5' },
+    { x: 400, y: 115, id: 'tree6' },
+    { x: 470, y: 100, id: 'tree7' },
+    { x: 540, y: 110, id: 'tree8' },
+    { x: 610, y: 95, id: 'tree9' },
+  ]
+);
 
-//console.log(arvores)
 
- let t = arvores.render([
-  { x: 180, y: 170, id: 'tree1' },
- { x: 59, y: 50, id: 'tree2' },
-]);
-console.log(t)
-console.log(t[0].drawImage)
-console.log(t[0].drawImage())
-console.log(t[1].drawImage())
+arvores.render(); // Se for função válida
+
+
 /*console.log(t.drawImage())
 console.log(t.drawImage)
 
 console.log(t)*/
-
 /*const necroorgon = floresta.createEntidade({
   position: {
     x: 170,
