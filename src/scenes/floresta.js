@@ -17,15 +17,15 @@ const configGlobal = {
 
 // Lista de posições dos objetos que serão desenhados
 const listaPosicoes = [
-  { x: 100, y: 100, id: 'obj1' },
-  { x: 200, y: 150, id: 'obj2' },
-  { x: 300, y: 200, id: 'obj3' },
+  { x: 100, y: 265, id: 'obj1' },
+  { x: 200, y: 265, id: 'obj2' },
+  { x: 300, y: 265, id: 'obj3' },
 ];
 
 // Criando o ambiente
 const floresta = new Ambiente({
   nome: 'Floresta',
-  fundo: 'path/to/bg.jpg', // pode usar como plano de fundo se quiser
+  fundo: '/imagens/plano-de-fundo-do-jogo-de-pixel-com-ceu-de-grama-aderecos-e-personagem_148553-371.jpg', // pode usar como plano de fundo se quiser
   som: null, // adiciona som se quiser
   ctx,
   classeSprite: Sprite,
@@ -36,7 +36,7 @@ const objetosAmbiente = floresta.createObjetos(configGlobal);
 objetosAmbiente.render(listaPosicoes);
 
 const necroorgon = floresta.createEntidade({
-  position: { x: 170, y: 180 },
+  position: { x: 170, y: 265 },
   dimensions: {
     height: 32,
     width: 32
@@ -46,10 +46,11 @@ const necroorgon = floresta.createEntidade({
   id: 'necroorgon'
 });
 
-
+let num = 0
 // Se quiser fazer isso em loop (e com verificação de carregamento de imagens):
 function renderLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  listaPosicoes[2].x--
   objetosAmbiente.render(listaPosicoes); // você pode armazenar os objetos e evitar recriar sempre
   necroorgon.draw();
   requestAnimationFrame(renderLoop);

@@ -44,6 +44,53 @@ export class Sprite {
 export class Ambiente {
   constructor({ nome, fundo, som, ctx, classeSprite }) {
     Object.assign(this, { nome, fundo, som, ctx, classeSprite });
+
+    // Carrega imagem de fundo se for string (caminho)
+    if (typeof this.fundo === 'string') {
+      const fundoCache = ImageCache.load(this.fundo);
+      this.fundoImg = fundoCache.img;
+      this.fundoCarregado = fundoCache;
+    }
+
+    // Prepara som
+    if (this.som) {
+      this.audio = new Audio(this.som);
+      this.audio.loop = true;
+    }
+  }
+
+  tocarSom() {
+    if (this.audio) {
+      this.audio.play().catch(err => {
+        console.warn('Falha ao tocar áudio:', err);
+      });
+    }
+  }
+
+  pararSom() {
+    if (this.audio) this.audio.pause();
+  }
+
+  desenharFundo() {
+    if (this.fundoCarregado?.loaded) {
+      this.ctx.drawImage(this.fundoImg, 0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    } else if (!this.fundoImg && typeof this.fundo === 'string') {
+      // se for uma cor como fundo
+      this.ctx.fillStyle = this.fundo;
+      this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    }
+  }
+
+  createEntidade({ position, dimensions, imgSrc, ctx, id = '' }) {
+    return new this.classeSprite({
+      x: position.x,
+      y: position.y,
+      id,
+      width: dimensions.width,
+      height: dimensions.height,
+      imgSrc,
+      ctx: ctx || this.ctx,
+    });
   }
 
   createObjetos(configGlobal) {
@@ -52,6 +99,9 @@ export class Ambiente {
     return {
       render: (listaPosicoes) => {
         objetos.length = 0;
+
+        // Desenha fundo antes dos objetos
+        this.desenharFundo();
 
         listaPosicoes.forEach(({ x, y, id }) => {
           const sprite = new this.classeSprite({
@@ -68,20 +118,6 @@ export class Ambiente {
       }
     };
   }
-  
-  createEntidade({ position, dimensions, imgSrc, ctx, id = '' }) {
-  const entidade = new this.classeSprite({
-    x: position.x,
-    y: position.y,
-    id,
-    width: dimensions.width,
-    height: dimensions.height,
-    imgSrc,
-    ctx: ctx || this.ctx,
-  });
-  
-  return entidade;
-}
 }
 
 class Velocity {
