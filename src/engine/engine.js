@@ -68,6 +68,20 @@ export class Ambiente {
       }
     };
   }
+  
+  createEntidade({ position, dimensions, imgSrc, ctx, id = '' }) {
+  const entidade = new this.classeSprite({
+    x: position.x,
+    y: position.y,
+    id,
+    width: dimensions.width,
+    height: dimensions.height,
+    imgSrc,
+    ctx: ctx || this.ctx,
+  });
+  
+  return entidade;
+}
 }
 
 class Velocity {
