@@ -20,7 +20,16 @@
     audio.play().catch(e => console.warn("Ainda não rolou:", e));
   }
 </script>-->
-
+<button id="startGame" style="font-size: 24px; padding: 20px;">Começar</button>
+<script>
+  document.getElementById("startGame").addEventListener("click", () => {
+    const musica = new Audio("/audios/ERONO_MUSICA_2.wav");
+    musica.loop = true;
+    musica.play();
+    // iniciar o jogo aqui
+    document.getElementById("startGame").style.display = "none";
+  });
+</script>
   <canvas id="game" width="420" height="400"></canvas>
   <div class="controls">
     <div class="btn" id="w" data-dir="w">↑</div>
